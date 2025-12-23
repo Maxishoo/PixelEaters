@@ -6,22 +6,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.pixeleaters.MainActivity
 import com.example.pixeleaters.data.database.AppDatabase
 import com.example.pixeleaters.data.model.Contact
 import com.example.pixeleaters.data.model.DataState
 import com.example.pixeleaters.data.model.PaginationState
 import com.example.pixeleaters.data.repository.ContactRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ContactUiState(
     val contactsState: DataState<List<Contact>> = DataState.Loading(),
-    val allContacts: List<Contact> = emptyList(),
     val selectedContactState: DataState<Contact?> = DataState.Loading(),
     val searchQuery: String = "",
     val selectedCategory: String? = null,
@@ -37,42 +36,54 @@ class ContactViewModel(
     private val _uiState = MutableStateFlow(ContactUiState())
     val uiState: StateFlow<ContactUiState> = _uiState.asStateFlow()
 
-    private val _contacts = mutableListOf<Contact>()
+    private var _allContacts = listOf<Contact>()
 
     init {
         loadInitialContacts()
 
         viewModelScope.launch {
-            repository.paginationState.collect { paginationState ->
+            repository.paginationState.collectLatest { paginationState ->
                 _uiState.update { it.copy(paginationState = paginationState) }
             }
         }
     }
 
     fun loadInitialContacts() {
-        _contacts.clear()
-        repository.resetPagination()
+        _uiState.update {
+            it.copy(
+                contactsState = DataState.Loading(),
+                isRefreshing = true
+            )
+        }
 
         viewModelScope.launch {
+            repository.resetPagination()
             repository.loadInitialContacts().collect { dataState ->
                 when (dataState) {
                     is DataState.Success -> {
-                        _contacts.addAll(dataState.data)
+                        _allContacts = dataState.data
+                        applyFilters()
                         _uiState.update {
                             it.copy(
-                                contactsState = DataState.Success(_contacts.toList()),
-                                allContacts = _contacts.toList()
+                                contactsState = DataState.Success(_allContacts),
+                                isRefreshing = false
                             )
                         }
                     }
                     is DataState.Error -> {
                         _uiState.update {
-                            it.copy(contactsState = dataState)
+                            it.copy(
+                                contactsState = dataState,
+                                isRefreshing = false
+                            )
                         }
                     }
                     is DataState.Loading -> {
                         _uiState.update {
-                            it.copy(contactsState = dataState)
+                            it.copy(
+                                contactsState = dataState,
+                                isRefreshing = false
+                            )
                         }
                     }
                 }
@@ -94,13 +105,9 @@ class ContactViewModel(
             when (val result = repository.loadNextPage()) {
                 is DataState.Success -> {
                     if (result.data.isNotEmpty()) {
-                        _contacts.addAll(result.data)
-                        _uiState.update {
-                            it.copy(
-                                contactsState = DataState.Success(_contacts.toList()),
-                                allContacts = _contacts.toList()
-                            )
-                        }
+                        val updatedList = _allContacts + result.data
+                        _allContacts = updatedList
+                        applyFilters()
                     }
                 }
                 is DataState.Error -> {
@@ -118,18 +125,19 @@ class ContactViewModel(
     }
 
     fun refreshContacts() {
-        _uiState.update { it.copy(isRefreshing = true) }
-        loadInitialContacts()
-        _uiState.update { it.copy(isRefreshing = false) }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            loadInitialContacts()
+        }
     }
 
     fun selectContact(contactId: Long) {
-        _uiState.update { it.copy(selectedContactState = DataState.Loading()) }
-
         viewModelScope.launch {
-            repository.getContactById(contactId).collect { dataState ->
-                _uiState.update { it.copy(selectedContactState = dataState) }
-            }
+            _uiState.update { it.copy(selectedContactState = DataState.Loading()) }
+            delay(100)
+
+            val result = repository.getContactById(contactId)
+            _uiState.update { it.copy(selectedContactState = result) }
         }
     }
 
@@ -150,10 +158,13 @@ class ContactViewModel(
             when (val result = repository.addContact(contact)) {
                 is DataState.Success -> {
                     hideAddDialog()
-                    loadInitialContacts()
+                    // Добавляем в локальный список
+                    val updatedList = _allContacts + result.data
+                    _allContacts = updatedList
+                    applyFilters()
                 }
                 is DataState.Error -> {
-                    // Можно показать snackbar с ошибкой
+                    // TODO: Показать snackbar с ошибкой
                 }
                 else -> {}
             }
@@ -162,83 +173,155 @@ class ContactViewModel(
 
     fun updateContact(contact: Contact) {
         viewModelScope.launch {
-            repository.updateContact(contact)
-            loadInitialContacts()
+            when (val result = repository.updateContact(contact)) {
+                is DataState.Success -> {
+                    // Обновляем в локальном списке
+                    val updatedList = _allContacts.map {
+                        if (it.id == contact.id) result.data else it
+                    }
+                    _allContacts = updatedList
+                    applyFilters()
+
+                    // Обновляем выбранный контакт если он открыт
+                    val currentSelected = _uiState.value.selectedContactState
+                    if (currentSelected is DataState.Success && currentSelected.data?.id == contact.id) {
+                        _uiState.update {
+                            it.copy(selectedContactState = DataState.Success(result.data))
+                        }
+                    }
+                }
+                else -> {}
+            }
         }
     }
 
     fun deleteContact(contact: Contact) {
         viewModelScope.launch {
-            repository.deleteContact(contact)
-            if ((_uiState.value.selectedContactState as? DataState.Success)?.data?.id == contact.id) {
-                clearSelectedContact()
+            when (val result = repository.deleteContact(contact)) {
+                is DataState.Success -> {
+                    if (result.data) {
+                        // Удаляем из локального списка
+                        val updatedList = _allContacts.filter { it.id != contact.id }
+                        _allContacts = updatedList
+                        applyFilters()
+
+                        // Если удаляли выбранный контакт - очищаем его
+                        if ((_uiState.value.selectedContactState as? DataState.Success)?.data?.id == contact.id) {
+                            clearSelectedContact()
+                        }
+                    }
+                }
+                else -> {}
             }
-            loadInitialContacts()
         }
     }
 
     fun searchContacts(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
 
-        if (query.isEmpty()) {
-            _uiState.update {
-                it.copy(contactsState = DataState.Success(_contacts))
-            }
-            return
-        }
+        if (query.length >= 2) {
+            // Для длинных запросов используем репозиторий
+            viewModelScope.launch {
+                _uiState.update { it.copy(isRefreshing = true) }
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-
-            when (val result = repository.searchContacts(query)) {
-                is DataState.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            contactsState = result,
-                            isRefreshing = false
-                        )
+                when (val result = repository.searchContacts(query)) {
+                    is DataState.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                contactsState = result,
+                                isRefreshing = false
+                            )
+                        }
+                    }
+                    else -> {
+                        applyFilters()
+                        _uiState.update { it.copy(isRefreshing = false) }
                     }
                 }
-                else -> {
-                    _uiState.update { it.copy(isRefreshing = false) }
-                }
             }
+        } else {
+            // Для коротких запросов используем локальную фильтрацию
+            applyFilters()
         }
     }
 
     fun filterByCategory(category: String?) {
         _uiState.update { it.copy(selectedCategory = category) }
 
-        if (category == null) {
-            _uiState.update {
-                it.copy(contactsState = DataState.Success(_contacts))
-            }
-            return
-        }
+        if (category != null) {
+            viewModelScope.launch {
+                _uiState.update { it.copy(isRefreshing = true) }
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isRefreshing = true) }
-
-            when (val result = repository.getContactsByCategory(category)) {
-                is DataState.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            contactsState = result,
-                            isRefreshing = false
-                        )
+                when (val result = repository.getContactsByCategory(category)) {
+                    is DataState.Success -> {
+                        _uiState.update {
+                            it.copy(
+                                contactsState = result,
+                                isRefreshing = false
+                            )
+                        }
+                    }
+                    else -> {
+                        applyFilters()
+                        _uiState.update { it.copy(isRefreshing = false) }
                     }
                 }
-                else -> {
-                    _uiState.update { it.copy(isRefreshing = false) }
-                }
             }
+        } else {
+            applyFilters()
         }
     }
 
     fun toggleFavorite(contactId: Long, isFavorite: Boolean) {
         viewModelScope.launch {
-            repository.toggleFavorite(contactId, isFavorite)
-            loadInitialContacts()
+            when (val result = repository.toggleFavorite(contactId, isFavorite)) {
+                is DataState.Success -> {
+                    // Обновляем в локальном списке
+                    val updatedList = _allContacts.map {
+                        if (it.id == contactId) result.data else it
+                    }
+                    _allContacts = updatedList
+                    applyFilters()
+
+                    // Обновляем выбранный контакт если он открыт
+                    val currentSelected = _uiState.value.selectedContactState
+                    if (currentSelected is DataState.Success && currentSelected.data?.id == contactId) {
+                        _uiState.update {
+                            it.copy(selectedContactState = DataState.Success(result.data))
+                        }
+                    }
+                }
+                else -> {
+                    // TODO: Показать ошибку
+                }
+            }
+        }
+    }
+
+    private fun applyFilters() {
+        val currentState = _uiState.value
+        val searchQuery = currentState.searchQuery
+        val selectedCategory = currentState.selectedCategory
+
+        val filteredList = if (searchQuery.isEmpty() && selectedCategory == null) {
+            _allContacts
+        } else {
+            _allContacts.filter { contact ->
+                val matchesSearch = searchQuery.isEmpty() ||
+                        contact.firstName.contains(searchQuery, ignoreCase = true) ||
+                        contact.lastName.contains(searchQuery, ignoreCase = true) ||
+                        contact.phoneNumber?.contains(searchQuery, ignoreCase = true) ?: false ||
+                        contact.email?.contains(searchQuery, ignoreCase = true) ?: false
+
+                val matchesCategory = selectedCategory == null ||
+                        contact.categories.contains(selectedCategory)
+
+                matchesSearch && matchesCategory
+            }
+        }
+
+        _uiState.update {
+            it.copy(contactsState = DataState.Success(filteredList))
         }
     }
 

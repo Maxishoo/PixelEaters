@@ -117,40 +117,16 @@ class ContactRepository @Inject constructor(
         }
     }
 
-    fun getContactById(id: Long): Flow<DataState<Contact?>> = flow {
-        emit(DataState.Loading("Загрузка контакта..."))
-
-        try {
-            val apiResponse = mockDataSource.getContactById(id)
-
-            if (apiResponse.success) {
-                apiResponse.data?.let { contact ->
-                    contactDao.insert(contact)
-                }
-
-                contactDao.getContactById(id).collect { dbContact ->
-                    val finalContact = dbContact ?: apiResponse.data
-                    emit(DataState.Success(finalContact))
-                }
+    suspend fun getContactById(contactId: Long): DataState<Contact?> {
+        return try {
+            val contact = contactDao.getContactByIdSync(contactId)
+            if (contact != null) {
+                DataState.Success(contact)
             } else {
-                contactDao.getContactById(id).collect { dbContact ->
-                    if (dbContact != null) {
-                        emit(DataState.Success(dbContact))
-                    } else {
-                        emit(DataState.Error(
-                            apiResponse.message ?: "Контакт не найден"
-                        ))
-                    }
-                }
+                DataState.Error("Контакт не найден")
             }
         } catch (e: Exception) {
-            contactDao.getContactById(id).collect { dbContact ->
-                if (dbContact != null) {
-                    emit(DataState.Success(dbContact))
-                } else {
-                    emit(DataState.Error("Ошибка загрузки: ${e.message}"))
-                }
-            }
+            DataState.Error("Ошибка: ${e.message}")
         }
     }
 
@@ -246,19 +222,16 @@ class ContactRepository @Inject constructor(
         }
     }
 
-    suspend fun toggleFavorite(id: Long, isFavorite: Boolean): DataState<Boolean> {
+    suspend fun toggleFavorite(id: Long, isFavorite: Boolean): DataState<Contact> {
         return try {
             val apiResponse = mockDataSource.toggleFavorite(id, isFavorite)
 
-            if (apiResponse.success) {
-                contactDao.getContactById(id).collect { contact ->
-                    contact?.let {
-                        contactDao.update(it.copy(isFavorite = isFavorite))
-                    }
-                }
-                DataState.Success(true)
+            if (apiResponse.success && apiResponse.data != null) {
+                // Обновляем контакт в БД
+                contactDao.update(apiResponse.data)
+                DataState.Success(apiResponse.data)
             } else {
-                DataState.Error(apiResponse.message ?: "Ошибка обновления")
+                DataState.Error(apiResponse.message ?: "Ошибка обновления избранного")
             }
         } catch (e: Exception) {
             DataState.Error("Ошибка сети: ${e.message}")

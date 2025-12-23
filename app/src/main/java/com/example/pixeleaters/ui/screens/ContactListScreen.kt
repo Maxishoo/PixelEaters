@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,10 +32,9 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,8 +46,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,6 +88,22 @@ fun ContactListScreen(
             uiState.searchQuery.isEmpty() &&
             uiState.selectedCategory == null) {
             viewModel.loadMoreContacts()
+        }
+    }
+
+    // Состояние для текста поиска (отдельно от ViewModel для мгновенного отклика)
+    var searchText by remember { mutableStateOf(uiState.searchQuery) }
+
+    LaunchedEffect(uiState.searchQuery) {
+        searchText = uiState.searchQuery
+    }
+
+    // Обработка поиска с задержкой для оптимизации
+    LaunchedEffect(searchText) {
+        // Небольшая задержка перед обновлением поиска в ViewModel
+        kotlinx.coroutines.delay(300)
+        if (searchText != uiState.searchQuery) {
+            viewModel.searchContacts(searchText)
         }
     }
 
@@ -127,129 +148,155 @@ fun ContactListScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            SearchBar(
-                query = uiState.searchQuery,
-                onQueryChange = { viewModel.searchContacts(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            CategoryFilterChips(
-                selectedCategory = uiState.selectedCategory,
-                onCategorySelected = { viewModel.filterByCategory(it) },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            if (uiState.isRefreshing &&
-                (uiState.searchQuery.isNotEmpty() || uiState.selectedCategory != null)) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Блюр-эффект для шапки
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                        .background(
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                        )
+//                        .blur(radius = 16.dp, edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(0.dp)))
                 ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                when (val contactsState = uiState.contactsState) {
-                    is DataState.Loading -> {
-                        Column(
+                    Column {
+                        // Поле поиска
+                        SearchBar(
+                            query = searchText,
+                            onQueryChange = { searchText = it },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            repeat(5) {
-                                ShimmerContactCard()
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 0.dp)
+                        )
+
+                        // Фильтры по категориям
+                        CategoryFilterChips(
+                            selectedCategory = uiState.selectedCategory,
+                            onCategorySelected = { viewModel.filterByCategory(it) },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp)
+                        )
+                    }
+                }
+
+                // Контент под шапкой
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    when (val contactsState = uiState.contactsState) {
+                        is DataState.Loading -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                repeat(10) {
+                                    ShimmerContactCard()
+                                }
                             }
                         }
-                    }
 
-                    is DataState.Success -> {
-                        if (contactsState.data.isEmpty()) {
-                            EmptyStateView(
-                                searchQuery = uiState.searchQuery,
-                                selectedCategory = uiState.selectedCategory,
-                                onClearFilters = {
-                                    viewModel.searchContacts("")
-                                    viewModel.filterByCategory(null)
-                                }
-                            )
-                        } else {
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                items(contactsState.data) { contact ->
-                                    ContactCard(
-                                        contact = contact,
-                                        onClick = {
-                                            if (!uiState.paginationState.isLoadingMore) {
-                                                onContactClick(contact.id)
-                                            }
-                                        },
-                                        onToggleFavorite = {
-                                            viewModel.toggleFavorite(contact.id, !contact.isFavorite)
-                                        }
-                                    )
-                                }
-
-                                if (uiState.paginationState.hasMore &&
-                                    uiState.searchQuery.isEmpty() &&
-                                    uiState.selectedCategory == null) {
-                                    item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(80.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            if (uiState.paginationState.isLoadingMore) {
-                                                Column(
-                                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                                ) {
-                                                    CircularProgressIndicator(
-                                                        strokeWidth = 2.dp
-                                                    )
-                                                    Text(
-                                                        text = "Загрузка...",
-                                                        style = MaterialTheme.typography.bodySmall,
-                                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                                    )
+                        is DataState.Success -> {
+                            if (contactsState.data.isEmpty()) {
+                                EmptyStateView(
+                                    searchQuery = uiState.searchQuery,
+                                    selectedCategory = uiState.selectedCategory,
+                                    onClearFilters = {
+                                        searchText = ""
+                                        viewModel.searchContacts("")
+                                        viewModel.filterByCategory(null)
+                                    }
+                                )
+                            } else {
+                                LazyColumn(
+                                    state = listState,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    items(
+                                        items = contactsState.data,
+                                        key = { contact -> contact.id }
+                                    ) { contact ->
+                                        val contactId = contact.id
+                                        ContactCard(
+                                            contact = contact,
+                                            onClick = {
+                                                if (!uiState.paginationState.isLoadingMore) {
+                                                    onContactClick(contactId) // ← используем локальную копию
                                                 }
-                                            } else if (uiState.paginationState.errorLoadingMore != null) {
-                                                Column(
-                                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                                ) {
-                                                    Text(
-                                                        text = uiState.paginationState.errorLoadingMore!!,
-                                                        color = MaterialTheme.colorScheme.error,
-                                                        style = MaterialTheme.typography.bodySmall
-                                                    )
-                                                    IconButton(
-                                                        onClick = { viewModel.loadMoreContacts() }
+                                            },
+                                            onToggleFavorite = {
+                                                viewModel.toggleFavorite(contact.id, !contact.isFavorite)
+                                            }
+                                        )
+                                    }
+
+                                    if (uiState.paginationState.hasMore &&
+                                        uiState.searchQuery.isEmpty() &&
+                                        uiState.selectedCategory == null) {
+                                        item {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(80.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                if (uiState.paginationState.isLoadingMore) {
+                                                    Column(
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        verticalArrangement = Arrangement.spacedBy(8.dp)
                                                     ) {
-                                                        Icon(
-                                                            Icons.Default.Refresh,
-                                                            contentDescription = "Повторить"
+                                                        CircularProgressIndicator(
+                                                            strokeWidth = 2.dp
+                                                        )
+                                                        Text(
+                                                            text = "Загрузка...",
+                                                            style = MaterialTheme.typography.bodySmall,
+                                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                                         )
                                                     }
+                                                } else if (uiState.paginationState.errorLoadingMore != null) {
+                                                    Column(
+                                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = uiState.paginationState.errorLoadingMore!!,
+                                                            color = MaterialTheme.colorScheme.error,
+                                                            style = MaterialTheme.typography.bodySmall
+                                                        )
+                                                        IconButton(
+                                                            onClick = { viewModel.loadMoreContacts() }
+                                                        ) {
+                                                            Icon(
+                                                                Icons.Default.Refresh,
+                                                                contentDescription = "Повторить"
+                                                            )
+                                                        }
+                                                    }
                                                 }
-                                            } else {
+                                            }
+                                        }
+                                    }
+
+                                    if (!uiState.paginationState.hasMore &&
+                                        contactsState.data.isNotEmpty() &&
+                                        uiState.searchQuery.isEmpty() &&
+                                        uiState.selectedCategory == null) {
+                                        item {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 24.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
                                                 Text(
-                                                    text = "Потяните вверх для загрузки",
+                                                    text = "Все контакты загружены",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                                 )
@@ -257,56 +304,36 @@ fun ContactListScreen(
                                         }
                                     }
                                 }
-
-                                if (!uiState.paginationState.hasMore &&
-                                    contactsState.data.isNotEmpty() &&
-                                    uiState.searchQuery.isEmpty() &&
-                                    uiState.selectedCategory == null) {
-                                    item {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(vertical = 24.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "Все контакты загружены",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                            )
-                                        }
-                                    }
-                                }
                             }
+                        }
+
+                        is DataState.Error -> {
+                            ErrorStateView(
+                                error = contactsState.message,
+                                onRetry = { viewModel.loadInitialContacts() }
+                            )
                         }
                     }
 
-                    is DataState.Error -> {
-                        ErrorStateView(
-                            error = contactsState.message,
-                            onRetry = { viewModel.loadInitialContacts() }
-                        )
-                    }
-                }
-
-                if (uiState.contactsState is DataState.Success &&
-                    (uiState.contactsState as DataState.Success<List<Contact>>).data.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "${(uiState.contactsState as DataState.Success<List<Contact>>).data.size} из ${uiState.paginationState.totalItems}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    if (uiState.contactsState is DataState.Success &&
+                        (uiState.contactsState as DataState.Success<List<Contact>>).data.isNotEmpty()) {
+                        Box(
                             modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
+                                .align(Alignment.BottomEnd)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = "${(uiState.contactsState as DataState.Success<List<Contact>>).data.size} из ${uiState.paginationState.totalItems}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier
+                                    .background(
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -321,37 +348,20 @@ fun ContactListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var textFieldValue by remember {
-        mutableStateOf(TextFieldValue(query))
-    }
-
-    LaunchedEffect(query) {
-        textFieldValue = TextFieldValue(query)
-    }
-
-    TextField(
-        value = textFieldValue,
-        onValueChange = {
-            textFieldValue = it
-            onQueryChange(it.text)
-        },
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
         leadingIcon = {
             Icon(Icons.Default.Search, contentDescription = "Поиск")
         },
         placeholder = { Text("Поиск контактов...") },
         singleLine = true,
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            disabledContainerColor = MaterialTheme.colorScheme.surface,
-        ),
         modifier = modifier
     )
 }
@@ -362,30 +372,27 @@ fun CategoryFilterChips(
     onCategorySelected: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val categories = listOf("Работа", "Друг", "Семья", "Учеба", "Коллега")
+    val categories = listOf("Все") + listOf("Работа", "Друг", "Семья", "Учеба", "Коллега")
 
-    Row(
+    FlowRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        CustomFilterChip(
-            selected = selectedCategory == null,
-            onClick = { onCategorySelected(null) },
-            label = { Text("Все") }
-        )
-
-        categories.forEach { category ->
-            CustomFilterChip(
-                selected = selectedCategory == category,
-                onClick = {
-                    onCategorySelected(
-                        if (selectedCategory == category) null else category
-                    )
-                },
-                label = { Text(category) }
-            )
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(-10.dp),
+        content = {
+            for (category in categories) {
+                val isSelected = selectedCategory == category
+                CustomFilterChip(
+                    selected = isSelected,
+                    onClick = {
+                        onCategorySelected(
+                            if (isSelected || category == "Все") null else category
+                        )
+                    },
+                    label = { Text(category) }
+                )
+            }
         }
-    }
+    )
 }
 
 @Composable

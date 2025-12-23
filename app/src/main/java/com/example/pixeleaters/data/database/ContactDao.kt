@@ -19,7 +19,7 @@ interface ContactDao {
     fun getAllContacts(): Flow<List<Contact>>
 
     @Query("SELECT * FROM contacts WHERE id = :contactId")
-    fun getContactById(contactId: Long): Flow<Contact?>
+    suspend fun getContactByIdSync(contactId: Long): Contact?  // Простая suspend функция
 
     @Query("DELETE FROM contacts")
     suspend fun clearAll()

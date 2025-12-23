@@ -20,14 +20,14 @@ fun ShimmerContactCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .height(80.dp),
+            .padding(horizontal = 2.dp, vertical = 4.dp)
+            .height(110.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(110.dp)
                 .shimmer(
                     rememberShimmer(
                         shimmerBounds = ShimmerBounds.View

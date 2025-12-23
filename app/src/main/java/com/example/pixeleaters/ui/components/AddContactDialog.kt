@@ -1,31 +1,13 @@
 package com.example.pixeleaters.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,7 +28,9 @@ fun AddContactDialog(
     var telegram by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var workplace by remember { mutableStateOf("") }
-    val categories = remember { mutableStateListOf<String>() }
+    val selectedCategories = remember { mutableStateListOf<String>() }
+
+    val availableCategories = listOf("Работа", "Друг", "Семья", "Учеба", "Коллега")
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -59,7 +43,6 @@ fun AddContactDialog(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Заголовок и кнопка закрытия
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -79,7 +62,7 @@ fun AddContactDialog(
             OutlinedTextField(
                 value = firstName,
                 onValueChange = { firstName = it },
-                label = { Text("Имя") },
+                label = { Text("Имя *") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -88,16 +71,46 @@ fun AddContactDialog(
             OutlinedTextField(
                 value = lastName,
                 onValueChange = { lastName = it },
-                label = { Text("Фамилия") },
+                label = { Text("Фамилия *") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Категории",
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                availableCategories.forEach { category ->
+                    FilterChip(
+                        selected = selectedCategories.contains(category),
+                        onClick = {
+                            if (selectedCategories.contains(category)) {
+                                selectedCategories.remove(category)
+                            } else {
+                                selectedCategories.add(category)
+                            }
+                        },
+                        label = { Text(category) }
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                label = { Text("Номер") },
+                label = { Text("Номер телефона") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone
                 ),
@@ -139,7 +152,7 @@ fun AddContactDialog(
             OutlinedTextField(
                 value = workplace,
                 onValueChange = { workplace = it },
-                label = { Text("Работа") },
+                label = { Text("Место работы") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -158,18 +171,19 @@ fun AddContactDialog(
                 Button(
                     onClick = {
                         val newContact = Contact(
-                            firstName = firstName,
-                            lastName = lastName,
-                            phoneNumber = if (phoneNumber.isNotBlank()) phoneNumber else null,
-                            email = if (email.isNotBlank()) email else null,
-                            telegram = if (telegram.isNotBlank()) telegram else null,
-                            address = if (address.isNotBlank()) address else null,
-                            workplace = if (workplace.isNotBlank()) workplace else null,
-                            categories = categories.toList()
+                            firstName = firstName.trim(),
+                            lastName = lastName.trim(),
+                            phoneNumber = if (phoneNumber.isNotBlank()) phoneNumber.trim() else null,
+                            email = if (email.isNotBlank()) email.trim() else null,
+                            telegram = if (telegram.isNotBlank()) telegram.trim() else null,
+                            address = if (address.isNotBlank()) address.trim() else null,
+                            workplace = if (workplace.isNotBlank()) workplace.trim() else null,
+                            categories = selectedCategories.toList()
                         )
                         onSave(newContact)
+                        onDismiss()
                     },
-                    enabled = firstName.isNotBlank() && lastName.isNotBlank(),
+                    enabled = firstName.trim().isNotBlank() && lastName.trim().isNotBlank(),
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Сохранить")
