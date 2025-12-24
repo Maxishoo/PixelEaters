@@ -69,6 +69,7 @@ import com.example.pixeleaters.ui.theme.PrimaryBlue
 import com.example.pixeleaters.ui.theme.TagChipText
 import com.example.pixeleaters.ui.theme.TagGreenBackground
 import com.example.pixeleaters.ui.theme.TagRedBackground
+import com.example.pixeleaters.ui.theme.TagTealBackground
 import com.example.pixeleaters.ui.theme.TextPrimary
 import com.example.pixeleaters.viewmodel.ContactViewModel
 import com.valentinilk.shimmer.shimmer
@@ -291,8 +292,12 @@ private fun ContactItem(
 
 @Composable
 private fun ContactTag(tag: String) {
-    val isColleague = tag.equals("коллега", ignoreCase = true)
-    val bg = if (isColleague) TagRedBackground else TagGreenBackground
+    val normalized = tag.trim().lowercase()
+    val bg = when (normalized) {
+        "коллега" -> TagRedBackground
+        "работа" -> TagTealBackground
+        else -> TagGreenBackground
+    }
     TagChip(
         text = stringResource(R.string.tag_format, tag),
         backgroundColor = bg,

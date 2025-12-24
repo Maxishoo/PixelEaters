@@ -8,8 +8,10 @@ val PrimaryBlue = Color(0xFF5162E5)
 // Solid chips with white text (like in should_be)
 val TagGreen = Color(0xFF509C50)
 val TagRed = Color(0xFFE77676)
+val TagTeal = Color(0xFF5DA4A4)
 val TagGreenBackground = TagGreen
 val TagRedBackground = TagRed
+val TagTealBackground = TagTeal
 val TagChipText = Color(0xFFFFFFFF)
 
 
