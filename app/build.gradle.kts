@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
+    id("kotlin-parcelize")
     id("kotlin-kapt")
 }
 
@@ -55,6 +55,7 @@ dependencies {
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.compose.foundation)
     kapt("androidx.room:room-compiler:2.6.1")
 
     // Lifecycle
@@ -66,6 +67,9 @@ dependencies {
 
     // Shimmer effect
     implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")
+
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

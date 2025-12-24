@@ -1,3 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PixelEaters</string>
+    
+    <!-- Navigation -->
+    <string name="nav_contacts">Контакты</string>
+    <string name="nav_reminders">Напоминания</string>
+    
+    <!-- Contacts Screen -->
+    <string name="contacts_title">Контакты</string>
+    <string name="search_hint">Поиск</string>
+    <string name="add_contact">Добавить контакт</string>
+    <string name="contact_avatar_description">Аватар контакта</string>
+    
+    <!-- Reminders Screen -->
+    <string name="reminders_title">Напоминания</string>
+    <string name="reminder_date_format">%1$s</string>
+    <string name="reminder_time_format">%1$s</string>
+    <string name="description_label">Описание:</string>
+    <string name="context_label">Контекст:</string>
+    <string name="button_completed">Выполнено</string>
+    <string name="button_edit">Редактировать</string>
+    
+    <!-- Tags -->
+    <string name="tag_format">#%1$s</string>
+    
+    <!-- Loading States -->
+    <string name="loading">Загрузка…</string>
+    <string name="error_occurred">Произошла ошибка</string>
+    <string name="retry">Повторить</string>
+    <string name="empty_contacts">Нет контактов</string>
+    <string name="empty_reminders">Нет напоминаний</string>
+    <string name="empty_state_description">Список пуст</string>
+    
+    <!-- Accessibility -->
+    <string name="back_button_description">Назад</string>
+    <string name="search_button_description">Поиск</string>
+    <string name="notifications_button_description">Уведомления</string>
+    <string name="profile_button_description">Профиль</string>
+    <string name="fab_add_description">Добавить</string>
+    <string name="calendar_icon_description">Календарь</string>
+    <string name="clock_icon_description">Время</string>
 </resources>
