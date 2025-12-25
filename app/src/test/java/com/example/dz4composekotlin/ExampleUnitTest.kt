@@ -1,4 +1,4 @@
-package com.example.pixeleaters
+package com.example.dz4composekotlin
 
 import org.junit.Test
 

@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PixelEaters"
+rootProject.name = "DZ4ComposeKotlin"
 include(":app")
- 

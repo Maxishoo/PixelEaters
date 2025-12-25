@@ -1,4 +1,4 @@
-package com.example.pixeleaters
+package com.example.dz4composekotlin
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,37 +11,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.pixeleaters.ui.theme.PixelEatersTheme
+import com.example.dz4composekotlin.ui.theme.DZ4ComposeKotlinTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            PixelEatersTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            DZ4ComposeKotlinTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    ContactsApp()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PixelEatersTheme {
-        Greeting("Android")
     }
 }

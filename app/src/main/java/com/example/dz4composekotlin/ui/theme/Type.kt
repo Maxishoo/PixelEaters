@@ -1,4 +1,4 @@
-package com.example.pixeleaters.ui.theme
+package com.example.dz4composekotlin.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,3 +1,46 @@
 <resources>
-    <string name="app_name">PixelEaters</string>
+    <string name="app_name">DZ4ComposeKotlin</string>
+
+    <string name="title_contacts">Контакты</string>
+    <string name="cd_menu">Меню</string>
+    <string name="cd_search">Поиск</string>
+    <string name="cd_notifications">Напоминания</string>
+    <string name="cd_profile">Профиль</string>
+
+    <string name="drawer_logout">Выйти</string>
+    <string name="cd_logout">Выход</string>
+
+    <string name="tab_info">Информация</string>
+    <string name="tab_notes">Заметки</string>
+
+    <string name="error_contact_load">Ошибка загрузки информации</string>
+    <string name="contact_not_found">Контакт не найден</string>
+
+    <string name="label_first_name">Имя</string>
+    <string name="label_last_name">Фамилия</string>
+    <string name="label_phone">Телефон</string>
+    <string name="label_email">Email</string>
+    <string name="label_telegram">Telegram</string>
+    <string name="label_address">Адрес</string>
+    <string name="label_job">Работа</string>
+
+    <string name="categories">Категории</string>
+    <string name="categories_empty">Категории не указаны</string>
+    <string name="cd_expand_categories">Развернуть категории</string>
+
+    <string name="error_notes_load">Ошибка загрузки заметок</string>
+    <string name="notes_empty">Нет заметок</string>
+    <string name="note_title">Заметка</string>
+    <string name="close">Закрыть</string>
+    <string name="ok">ОК</string>
+
+    <string name="error_contacts_load">Ошибка загрузки</string>
+    <string name="contacts_empty">Нет контактов</string>
+
+    <string name="fab_contact">Контакт</string>
+    <string name="fab_note">Заметку</string>
+    <string name="fab_reminder">Напоминание</string>
+    <string name="fab_add_description">Добавить</string>
+    <string name="fab_close_description">Закрыть</string>
+
 </resources>
