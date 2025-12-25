@@ -30,6 +30,20 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
+            <!-- Тег -->
+            <TextView
+
+                android:id="@+id/textViewTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_tag"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="#тег"
+                android:textColor="@color/tag_chip_text"
+                android:textAllCaps="true"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/textViewTitle"
@@ -47,6 +61,15 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp">
 
+                <!-- Иконка календаря -->
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_calendar"
+                    android:tint="@color/text_secondary"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp" />
+
                 <TextView
                     android:id="@+id/textViewDate"
                     android:layout_width="wrap_content"
@@ -57,8 +80,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" • "
-                    android:textColor="#999999" />
+                    android:text="   "
+                    android:textColor="@color/text_hint"
+                    android:layout_marginHorizontal="4dp" />
+
+                <!-- Иконка часов -->
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clock"
+                    android:tint="@color/text_secondary"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp" />
 
                 <TextView
                     android:id="@+id/textViewTime"
@@ -88,26 +121,16 @@
                 android:text="Дополнительный контекст"
                 android:textColor="@color/text_secondary" />
 
-            <!-- Тег -->
-            <TextView
-                android:id="@+id/textViewTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@color/tag_background"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:text="#тег"
-                android:textColor="@color/text_primary"
-                android:textAllCaps="true"
-                android:textSize="12sp" />
+
 
             <!-- Кнопки -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonDone"
@@ -115,8 +138,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginEnd="40dp"
                     android:text="Выполнено"
                     android:textColor="@color/text_primary" />
+
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonEdit"

@@ -29,6 +29,6 @@
 
 
     <color name="text_hint">#FFBDBDBD</color>
-    <color name="tag_background">#E0E0E0</color>
+    <color name="tag_background">#FFE77676</color>
     <color name="tag_chip_text">#FFFFFFFF</color>
 </resources>

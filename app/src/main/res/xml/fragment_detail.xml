@@ -31,90 +31,128 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Заголовок -->
             <TextView
                 android:id="@+id/textViewTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="4dp" />
 
+            <!-- Дата + Время -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:layout_marginBottom="8dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_calendar"
+                    android:tint="@color/text_secondary"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp" />
 
                 <TextView
                     android:id="@+id/textViewDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_gravity="center_vertical" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" • "
-                    android:textColor="@color/text_hint" />
+                    android:textColor="@color/text_hint"
+                    android:textSize="14sp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="4dp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clock"
+                    android:tint="@color/text_secondary"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp" />
 
                 <TextView
                     android:id="@+id/textViewTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_gravity="center_vertical" />
 
             </LinearLayout>
 
+            <!-- Описание -->
             <TextView
                 android:id="@+id/textViewDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:textSize="16sp"
-                android:textColor="@color/text_primary" />
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp" />
 
+            <!-- Контекст -->
             <TextView
                 android:id="@+id/textViewContext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp" />
 
+            <!-- Тег -->
             <TextView
                 android:id="@+id/textViewTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:background="@color/tag_background"
                 android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
+                android:paddingVertical="4dp"
                 android:textColor="@color/tag_chip_text"
                 android:textAllCaps="true"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:layout_marginBottom="24dp" />
 
-              <LinearLayout
+            <!-- Кнопки -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="8dp">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonDone"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Выполнено"
                     android:textColor="@color/text_primary"
-                    style="@style/Widget.Material3.Button.OutlinedButton" />
+                    android:textSize="14sp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:layout_marginEnd="8dp" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonEdit"
+                    style="@style/Widget.Material3.Button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Редактировать"
                     android:textColor="@color/white"
-                    style="@style/Widget.Material3.Button" />
+                    android:textSize="14sp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp" />
 
             </LinearLayout>
 
