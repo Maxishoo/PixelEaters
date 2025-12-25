@@ -1,3 +1,23 @@
 <resources>
-    <string name="app_name">PixelEaters</string>
+    <!-- Напоминания: данные для моков -->
+    <string name="reminder_title_1">День рождения Ивана</string>
+    <string name="reminder_desc_1">Не забудьте поздравить друга с праздником</string>
+    <string name="reminder_context_1">Мой друг со школы, с которым я проводил очень много времени.</string>
+    <string name="reminder_tag_1">#коллега</string>
+
+    <string name="reminder_title_2">Встреча с заказчиком</string>
+    <string name="reminder_desc_2">Обсудить доработки по проекту</string>
+    <string name="reminder_context_2">Важная встреча — нужно подготовить презентацию.</string>
+    <string name="reminder_tag_2">#работа</string>
+
+    <string name="reminder_title_3">Йога</string>
+    <string name="reminder_desc_3">Занятие в студии на улице Ленина</string>
+    <string name="reminder_context_3">Не забудьте коврик и воду!</string>
+    <string name="reminder_tag_3">#здоровье</string>
+
+    <string name="error_reminder_not_found">Напоминание не найдено</string>
+    <string name="error_loading_reminder">Не удалось загрузить напоминание</string>
+
+    <string name="app_name">...</string>
+
 </resources>

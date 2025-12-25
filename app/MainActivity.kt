@@ -1,4 +1,4 @@
-package com.example.pixeleaters
+package com.example.pixelaters
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
+        // Подключаем BottomNavigationView (если он есть в activity_main.xml)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.setupWithNavController(navController)
     }

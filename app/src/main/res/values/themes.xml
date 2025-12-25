@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PixelEaters" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Основная тема приложения (светлая) -->
+    <style name="Theme.PixelEaters" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/purple_grey_40</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/pink_40</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/contacts_list_background</item>
+        <item name="colorSurface">@color/card_white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <!-- Buttons -->
+        <item name="colorPrimaryContainer">@color/button_blue</item>
+
+        <!-- Status bar (требует кода в MainActivity) -->
+        <!-- Цвет статус-бара задаётся в коде, но фон можно указать -->
+    </style>
+
 </resources>
