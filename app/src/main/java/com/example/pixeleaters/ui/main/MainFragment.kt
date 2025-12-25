@@ -15,8 +15,6 @@ import com.example.pixeleaters.databinding.FragmentMainBinding
 import com.example.pixeleaters.ui.main.MainViewModel
 
 
-
-
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
@@ -46,7 +44,6 @@ class MainFragment : Fragment() {
         adapter = MainAdapter { reminderId ->
             // Навигация в детали при клике
             val action = MainFragmentDirections.actionMainFragmentToDetailFragment(reminderId)
-
             findNavController().navigate(action)
         }
         binding.recyclerViewReminders.apply {

@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.pixeleaters.R
-import com.example.pixeleaters.data.model.Reminder
+import com.example.pixeleaters.data.model.Constants
 import com.example.pixeleaters.data.repository.ReminderRepository
 import kotlinx.coroutines.launch
 
@@ -18,8 +18,8 @@ class DetailViewModel(
 
     private val repository = ReminderRepository(application.applicationContext)
 
-    private val _reminder = MutableLiveData<Reminder?>()
-    val reminder: LiveData<Reminder?> = _reminder
+    private val _reminder = MutableLiveData<Constants?>()
+    val reminder: LiveData<Constants?> = _reminder
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading

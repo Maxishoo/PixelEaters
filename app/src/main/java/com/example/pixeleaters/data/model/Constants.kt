@@ -6,7 +6,7 @@ package com.example.pixeleaters.data.model
  * Все текстовые поля предназначены для подстановки из ресурсов (strings.xml),
  * но передаются как строки — локализация и форматирование должны управляться выше.
  */
-data class Reminder(
+data class Constants(
     val id: String,
     val title: String,
     val date: String,        // Формат: "25.11.2025"

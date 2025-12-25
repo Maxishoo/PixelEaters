@@ -6,12 +6,12 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pixeleaters.data.model.Reminder
+import com.example.pixeleaters.data.model.Constants
 import com.example.pixeleaters.databinding.ItemReminderBinding
 
 class MainAdapter(
     private val onItemClick: (String) -> Unit
-) : ListAdapter<Reminder, MainAdapter.ReminderViewHolder>(ReminderDiffCallback()) {
+) : ListAdapter<Constants, MainAdapter.ReminderViewHolder>(ReminderDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReminderViewHolder {
         val binding = ItemReminderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,7 +26,7 @@ class MainAdapter(
         private val binding: ItemReminderBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(reminder: Reminder) {
+        fun bind(reminder: Constants) {
             binding.apply {
                 textViewTitle.text = reminder.title
                 textViewDate.text = reminder.date
@@ -47,12 +47,12 @@ class MainAdapter(
     }
 }
 
-class ReminderDiffCallback : DiffUtil.ItemCallback<Reminder>() {
-    override fun areItemsTheSame(oldItem: Reminder, newItem: Reminder): Boolean {
+class ReminderDiffCallback : DiffUtil.ItemCallback<Constants>() {
+    override fun areItemsTheSame(oldItem: Constants, newItem: Constants): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Reminder, newItem: Reminder): Boolean {
+    override fun areContentsTheSame(oldItem: Constants, newItem: Constants): Boolean {
         return oldItem == newItem
     }
 }
