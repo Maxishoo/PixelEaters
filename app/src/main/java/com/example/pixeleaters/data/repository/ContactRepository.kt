@@ -2,7 +2,6 @@ package com.example.pixeleaters.data.repository
 
 import com.example.pixeleaters.data.database.ContactDao
 import com.example.pixeleaters.data.mock.MockDataSource
-import com.example.pixeleaters.data.model.ApiResponse
 import com.example.pixeleaters.data.model.Contact
 import com.example.pixeleaters.data.model.DataState
 import com.example.pixeleaters.data.model.PaginationState
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -25,7 +23,7 @@ class ContactRepository @Inject constructor(
     val paginationState: StateFlow<PaginationState> = _paginationState.asStateFlow()
 
     fun loadInitialContacts(): Flow<DataState<List<Contact>>> = flow {
-        emit(DataState.Loading("Загрузка контактов..."))
+        emit(DataState.Loading(""))
 
         try {
             val apiResponse = mockDataSource.getContactsInitial(_paginationState.value.pageSize)
@@ -49,12 +47,12 @@ class ContactRepository @Inject constructor(
                     if (dbContacts.isNotEmpty()) {
                         emit(DataState.Success(dbContacts))
                     } else {
-                        emit(DataState.Error(apiResponse.message ?: "Ошибка загрузки"))
+                        emit(DataState.Error(apiResponse.message ?: ""))
                     }
                 }
             }
         } catch (e: Exception) {
-            emit(DataState.Error("Ошибка сети: ${e.message}"))
+            emit(DataState.Error("${e.message}"))
         }
     }
 
@@ -93,7 +91,7 @@ class ContactRepository @Inject constructor(
                         errorLoadingMore = apiResponse.message
                     )
                 }
-                DataState.Error(apiResponse.message ?: "Ошибка загрузки")
+                DataState.Error(apiResponse.message ?: "")
             }
         } catch (e: Exception) {
             _paginationState.update {
@@ -102,7 +100,7 @@ class ContactRepository @Inject constructor(
                     errorLoadingMore = e.message
                 )
             }
-            DataState.Error("Ошибка сети: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -123,10 +121,10 @@ class ContactRepository @Inject constructor(
             if (contact != null) {
                 DataState.Success(contact)
             } else {
-                DataState.Error("Контакт не найден")
+                DataState.Error("")
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -144,22 +142,7 @@ class ContactRepository @Inject constructor(
                 DataState.Success(localContact)
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка при добавлении: ${e.message}")
-        }
-    }
-
-    suspend fun updateContact(contact: Contact): DataState<Contact> {
-        return try {
-            val apiResponse = mockDataSource.updateContact(contact)
-
-            if (apiResponse.success) {
-                contactDao.update(contact)
-                DataState.Success(contact)
-            } else {
-                DataState.Error(apiResponse.message ?: "Ошибка обновления")
-            }
-        } catch (e: Exception) {
-            DataState.Error("Ошибка сети: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -171,10 +154,10 @@ class ContactRepository @Inject constructor(
                 contactDao.delete(contact)
                 DataState.Success(true)
             } else {
-                DataState.Error(apiResponse.message ?: "Ошибка удаления")
+                DataState.Error(apiResponse.message ?: "")
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка сети: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -196,11 +179,11 @@ class ContactRepository @Inject constructor(
                 if (localResults.isNotEmpty()) {
                     DataState.Success(localResults)
                 } else {
-                    DataState.Error(apiResponse.message ?: "Ничего не найдено")
+                    DataState.Error(apiResponse.message ?: "")
                 }
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка поиска: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -218,7 +201,7 @@ class ContactRepository @Inject constructor(
                 DataState.Success(localResults)
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка фильтрации: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 
@@ -227,14 +210,13 @@ class ContactRepository @Inject constructor(
             val apiResponse = mockDataSource.toggleFavorite(id, isFavorite)
 
             if (apiResponse.success && apiResponse.data != null) {
-                // Обновляем контакт в БД
                 contactDao.update(apiResponse.data)
                 DataState.Success(apiResponse.data)
             } else {
-                DataState.Error(apiResponse.message ?: "Ошибка обновления избранного")
+                DataState.Error(apiResponse.message ?: "")
             }
         } catch (e: Exception) {
-            DataState.Error("Ошибка сети: ${e.message}")
+            DataState.Error("${e.message}")
         }
     }
 }
