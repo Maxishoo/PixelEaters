@@ -30,7 +30,7 @@ fun CustomFilterChip(
             selectedLabelColor = MaterialTheme.colorScheme.onPrimary
         ),
         border = FilterChipDefaults.filterChipBorder(
-            borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+            borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.8f),
             selectedBorderColor = MaterialTheme.colorScheme.primary,
             borderWidth = 1.dp,
             enabled = enabled,

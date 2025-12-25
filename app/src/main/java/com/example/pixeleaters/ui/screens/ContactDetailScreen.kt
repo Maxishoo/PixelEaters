@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -54,7 +53,9 @@ import com.example.pixeleaters.viewmodel.ContactViewModel
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
+import com.example.pixeleaters.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,10 +74,10 @@ fun ContactDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Детали контакта") },
+                title = { Text(stringResource(R.string.contact_detail_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -95,8 +96,8 @@ fun ContactDetailScreen(
                                 Icon(
                                     imageVector = if (state.data.isFavorite) Icons.Default.Favorite
                                     else Icons.Default.FavoriteBorder,
-                                    contentDescription = if (state.data.isFavorite) "Убрать из избранного"
-                                    else "Добавить в избранное",
+                                    contentDescription = if (state.data.isFavorite) stringResource(R.string.contact_remove_from_favorites)
+                                    else stringResource(R.string.add_to_favorites),
                                     tint = Color.White
                                 )
                             }
@@ -108,7 +109,7 @@ fun ContactDetailScreen(
                                     }
                                 }
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = "Удалить", tint = Color.White)
+                                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color.White)
                             }
                         }
                     }
@@ -132,8 +133,6 @@ fun ContactDetailScreen(
                     if (contact != null) {
                         ContactDetailContent(
                             contact = contact,
-                            onBackClick = onBackClick,
-                            viewModel = viewModel,
                             context = context
                         )
                     } else {
@@ -141,9 +140,9 @@ fun ContactDetailScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text("Контакт не найден")
+                            Text(stringResource(R.string.contact_not_found))
                             Button(onClick = onBackClick) {
-                                Text("Вернуться")
+                                Text(stringResource(R.string.return_back))
                             }
                         }
                     }
@@ -159,7 +158,7 @@ fun ContactDetailScreen(
                             color = MaterialTheme.colorScheme.error
                         )
                         Button(onClick = onBackClick) {
-                            Text("Вернуться")
+                            Text(stringResource(R.string.return_back))
                         }
                     }
                 }
@@ -171,8 +170,6 @@ fun ContactDetailScreen(
 @Composable
 fun ContactDetailContent(
     contact: com.example.pixeleaters.data.model.Contact,
-    onBackClick: () -> Unit,
-    viewModel: ContactViewModel,
     context: android.content.Context
 ) {
     Column(
@@ -194,13 +191,13 @@ fun ContactDetailContent(
             ) {
                 Icon(
                     Icons.Default.Favorite,
-                    contentDescription = "Избранное",
+                    contentDescription = stringResource(R.string.favorite_label),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "В избранном",
+                    text = stringResource(R.string.in_favorites),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -216,7 +213,7 @@ fun ContactDetailContent(
             ) {
                 contact.categories.forEach { category ->
                     CategoryChip(
-                        category = category,
+                        categoryLabel = category,
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
                 }
@@ -237,7 +234,7 @@ fun ContactDetailContent(
                 contact.phoneNumber?.let { phone ->
                     ContactInfoRow(
                         icon = Icons.Default.Call,
-                        title = "Телефон",
+                        title = stringResource(R.string.phone),
                         value = phone,
                         onClick = {
                             val intent = Intent(Intent.ACTION_DIAL).apply {
@@ -251,7 +248,7 @@ fun ContactDetailContent(
                 contact.email?.let { email ->
                     ContactInfoRow(
                         icon = Icons.Default.Email,
-                        title = "Email",
+                        title = stringResource(R.string.email),
                         value = email,
                         onClick = {
                             val intent = Intent(Intent.ACTION_SENDTO).apply {
@@ -265,7 +262,7 @@ fun ContactDetailContent(
                 contact.telegram?.let { telegram ->
                     ContactInfoRow(
                         icon = Icons.Default.Message,
-                        title = "Telegram",
+                        title = stringResource(R.string.telegram),
                         value = telegram,
                         onClick = {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -279,7 +276,7 @@ fun ContactDetailContent(
                 contact.address?.let { address ->
                     ContactInfoRow(
                         icon = Icons.Default.LocationOn,
-                        title = "Адрес",
+                        title = stringResource(R.string.address),
                         value = address,
                         onClick = {
                             val intent = Intent(
@@ -294,7 +291,7 @@ fun ContactDetailContent(
                 contact.workplace?.let { workplace ->
                     ContactInfoRow(
                         icon = Icons.Default.Work,
-                        title = "Работа",
+                        title = stringResource(R.string.workplace),
                         value = workplace
                     )
                 }
@@ -320,9 +317,9 @@ fun ContactDetailContent(
                 },
                 enabled = contact.phoneNumber != null
             ) {
-                Icon(Icons.Default.Call, contentDescription = "Позвонить", modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.Call, contentDescription = stringResource(R.string.call), modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Позвонить")
+                Text(stringResource(R.string.call))
             }
 
             Button(
@@ -330,7 +327,7 @@ fun ContactDetailContent(
                     when {
                         contact.phoneNumber != null -> {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
-                                data = "smsto:${contact.phoneNumber}".toUri()
+                                data = "site:${contact.phoneNumber}".toUri()
                             }
                             context.startActivity(intent)
                         }
@@ -350,9 +347,9 @@ fun ContactDetailContent(
                 },
                 enabled = contact.phoneNumber != null || contact.email != null || contact.telegram != null
             ) {
-                Icon(Icons.Default.Message, contentDescription = "Написать", modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.Message, contentDescription = stringResource(R.string.write), modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Написать")
+                Text(stringResource(R.string.write))
             }
         }
     }

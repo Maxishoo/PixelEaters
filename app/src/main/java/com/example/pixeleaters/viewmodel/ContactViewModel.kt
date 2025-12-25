@@ -1,6 +1,5 @@
 package com.example.pixeleaters.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -158,54 +157,47 @@ class ContactViewModel(
             when (val result = repository.addContact(contact)) {
                 is DataState.Success -> {
                     hideAddDialog()
-                    // Добавляем в локальный список
                     val updatedList = _allContacts + result.data
                     _allContacts = updatedList
                     applyFilters()
                 }
-                is DataState.Error -> {
-                    // TODO: Показать snackbar с ошибкой
-                }
+                is DataState.Error -> {}
                 else -> {}
             }
         }
     }
 
-    fun updateContact(contact: Contact) {
-        viewModelScope.launch {
-            when (val result = repository.updateContact(contact)) {
-                is DataState.Success -> {
-                    // Обновляем в локальном списке
-                    val updatedList = _allContacts.map {
-                        if (it.id == contact.id) result.data else it
-                    }
-                    _allContacts = updatedList
-                    applyFilters()
-
-                    // Обновляем выбранный контакт если он открыт
-                    val currentSelected = _uiState.value.selectedContactState
-                    if (currentSelected is DataState.Success && currentSelected.data?.id == contact.id) {
-                        _uiState.update {
-                            it.copy(selectedContactState = DataState.Success(result.data))
-                        }
-                    }
-                }
-                else -> {}
-            }
-        }
-    }
+//    fun updateContact(contact: Contact) {
+//        viewModelScope.launch {
+//            when (val result = repository.updateContact(contact)) {
+//                is DataState.Success -> {
+//                    val updatedList = _allContacts.map {
+//                        if (it.id == contact.id) result.data else it
+//                    }
+//                    _allContacts = updatedList
+//                    applyFilters()
+//
+//                    val currentSelected = _uiState.value.selectedContactState
+//                    if (currentSelected is DataState.Success && currentSelected.data?.id == contact.id) {
+//                        _uiState.update {
+//                            it.copy(selectedContactState = DataState.Success(result.data))
+//                        }
+//                    }
+//                }
+//                else -> {}
+//            }
+//        }
+//    }
 
     fun deleteContact(contact: Contact) {
         viewModelScope.launch {
             when (val result = repository.deleteContact(contact)) {
                 is DataState.Success -> {
                     if (result.data) {
-                        // Удаляем из локального списка
                         val updatedList = _allContacts.filter { it.id != contact.id }
                         _allContacts = updatedList
                         applyFilters()
 
-                        // Если удаляли выбранный контакт - очищаем его
                         if ((_uiState.value.selectedContactState as? DataState.Success)?.data?.id == contact.id) {
                             clearSelectedContact()
                         }
@@ -220,7 +212,6 @@ class ContactViewModel(
         _uiState.update { it.copy(searchQuery = query) }
 
         if (query.length >= 2) {
-            // Для длинных запросов используем репозиторий
             viewModelScope.launch {
                 _uiState.update { it.copy(isRefreshing = true) }
 
@@ -240,7 +231,6 @@ class ContactViewModel(
                 }
             }
         } else {
-            // Для коротких запросов используем локальную фильтрацию
             applyFilters()
         }
     }
@@ -276,14 +266,12 @@ class ContactViewModel(
         viewModelScope.launch {
             when (val result = repository.toggleFavorite(contactId, isFavorite)) {
                 is DataState.Success -> {
-                    // Обновляем в локальном списке
                     val updatedList = _allContacts.map {
                         if (it.id == contactId) result.data else it
                     }
                     _allContacts = updatedList
                     applyFilters()
 
-                    // Обновляем выбранный контакт если он открыт
                     val currentSelected = _uiState.value.selectedContactState
                     if (currentSelected is DataState.Success && currentSelected.data?.id == contactId) {
                         _uiState.update {
@@ -292,7 +280,6 @@ class ContactViewModel(
                     }
                 }
                 else -> {
-                    // TODO: Показать ошибку
                 }
             }
         }

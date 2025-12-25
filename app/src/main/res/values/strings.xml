@@ -1,3 +1,79 @@
 <resources>
     <string name="app_name">Contacts App</string>
+
+    <string name="category_all">Все</string>
+    <string name="category_work">Работа</string>
+    <string name="category_study">Учёба</string>
+    <string name="category_friend">Друг</string>
+    <string name="category_family">Семья</string>
+    <string name="category_colleague">Коллега</string>
+
+    <string-array name="categories">
+        <item>@string/category_work</item>
+        <item>@string/category_study</item>
+        <item>@string/category_friend</item>
+        <item>@string/category_family</item>
+        <item>@string/category_colleague</item>
+    </string-array>
+
+    <string name="add_contact_title">Добавить контакт</string>
+    <string name="label_first_name">Имя *</string>
+    <string name="label_last_name">Фамилия *</string>
+    <string name="label_categories">Категории</string>
+    <string name="label_phone_number">Номер телефона</string>
+    <string name="label_email">Email</string>
+    <string name="label_telegram">Telegram</string>
+    <string name="label_address">Адрес</string>
+    <string name="label_workplace">Место работы</string>
+
+    <!-- Кнопки -->
+    <string name="button_cancel">Отмена</string>
+    <string name="button_save">Сохранить</string>
+
+    <!-- Accessibility -->
+    <string name="content_description_close">Закрыть</string>
+
+    <string name="contact_remove_from_favorites">Убрать из избранного</string>
+    <string name="contact_add_to_favorites">Добавить в избранное</string>
+
+    <string name="contact_detail_title">Детали контакта</string>
+    <string name="back">Назад</string>
+    <string name="remove_from_favorites">Убрать из избранного</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="delete">Удалить</string>
+    <string name="contact_not_found">Контакт не найден</string>
+    <string name="return_back">Вернуться</string>
+    <string name="error_loading_contact">Ошибка загрузки контакта</string>
+
+    <!-- Contact Detail Content -->
+    <string name="favorite_label">Избранное</string>
+    <string name="in_favorites">В избранном</string>
+    <string name="phone">Телефон</string>
+    <string name="email">Email</string>
+    <string name="telegram">Telegram</string>
+    <string name="address">Адрес</string>
+    <string name="workplace">Работа</string>
+    <string name="call">Позвонить</string>
+    <string name="write">Написать</string>
+
+    <string name="empty_state_no_contacts">Нет контактов</string>
+    <string name="empty_state_no_contacts_by_search">Не найдено контактов по запросу "%1$s"</string>
+    <string name="empty_state_no_contacts_in_category">Нет контактов в категории "%1$s"</string>
+    <string name="empty_state_no_contacts_yet">Контактов пока нет</string>
+    <string name="empty_state_clear_filters">Сбросить фильтры</string>
+
+    <string name="error_state_content_description">Ошибка</string>
+    <string name="error_state_retry">Повторить попытку</string>
+
+    <string name="search_content_description">Поиск</string>
+    <string name="search_placeholder">Поиск контактов…</string>
+
+    <string name="contacts_loaded">Все контакты загружены</string>
+    <string name="error_retry">Повторить</string>
+    <string name="try_loading">Загрузка…</string>
+    <string name="add_description">Добавить</string>
+    <string name="update_description">Обновить</string>
+
+    <string name="contacts_label">Контакты</string>
+
 </resources>

@@ -9,7 +9,7 @@ class MockDataSource {
     private var contacts = mutableListOf<Contact>()
 
     init {
-        contacts.addAll(generateMockContacts(20))
+        contacts.addAll(generateMockContacts())
     }
 
     private suspend fun simulateNetworkDelay(minDelay: Int = 500, maxDelay: Int = 1000) {
@@ -19,7 +19,7 @@ class MockDataSource {
 
     private fun shouldSimulateError(): Boolean = Random.nextDouble() < 0.1
 
-    private fun generateMockContacts(count: Int): List<Contact> {
+    private fun generateMockContacts(count: Int = 100): List<Contact> {
         val firstNames = listOf(
             "Иван", "Алексей", "Дмитрий", "Сергей", "Андрей",
             "Мария", "Анна", "Екатерина", "Ольга", "Наталья",
@@ -73,26 +73,26 @@ class MockDataSource {
     }
 
     private fun generateCategories(): List<String> {
-        val allCategories = listOf("Работа", "Друг", "Семья", "Учеба", "Коллега", "Клиент")
+        val allCategories = listOf("Работа", "Друг", "Семья", "Учёба", "Коллега")
         return allCategories
             .shuffled()
             .take(Random.nextInt(1, 4))
             .distinct()
     }
 
-    suspend fun getAllContacts(): ApiResponse<List<Contact>> {
-        simulateNetworkDelay()
-
-        return if (shouldSimulateError()) {
-            ApiResponse(
-                data = emptyList(),
-                success = false,
-                message = "Ошибка сервера: Не удалось загрузить контакты"
-            )
-        } else {
-            ApiResponse(data = contacts)
-        }
-    }
+//    suspend fun getAllContacts(): ApiResponse<List<Contact>> {
+//        simulateNetworkDelay()
+//
+//        return if (shouldSimulateError()) {
+//            ApiResponse(
+//                data = emptyList(),
+//                success = false,
+//                message = "Ошибка сервера: Не удалось загрузить контакты"
+//            )
+//        } else {
+//            ApiResponse(data = contacts)
+//        }
+//    }
 
     suspend fun getContactsPaginated(
         page: Int,
@@ -141,21 +141,21 @@ class MockDataSource {
         }
     }
 
-    suspend fun getContactById(id: Long): ApiResponse<Contact?> {
-        simulateNetworkDelay(800, 1500)
-
-        return if (shouldSimulateError()) {
-            ApiResponse(
-                data = null,
-                success = false,
-                message = "Ошибка при получении контакта"
-            )
-        } else {
-            val contact = contacts.firstOrNull { it.id == id }
-                ?: contacts.first().copy(id = id)
-            ApiResponse(data = contact)
-        }
-    }
+//    suspend fun getContactById(id: Long): ApiResponse<Contact?> {
+//        simulateNetworkDelay(800, 1500)
+//
+//        return if (shouldSimulateError()) {
+//            ApiResponse(
+//                data = null,
+//                success = false,
+//                message = "Ошибка при получении контакта"
+//            )
+//        } else {
+//            val contact = contacts.firstOrNull { it.id == id }
+//                ?: contacts.first().copy(id = id)
+//            ApiResponse(data = contact)
+//        }
+//    }
 
     suspend fun searchContacts(query: String): ApiResponse<List<Contact>> {
         simulateNetworkDelay()
@@ -209,25 +209,25 @@ class MockDataSource {
         }
     }
 
-    suspend fun updateContact(contact: Contact): ApiResponse<Contact> {
-        simulateNetworkDelay(1200, 2000)
-
-        return if (shouldSimulateError()) {
-            ApiResponse(
-                data = contact,
-                success = false,
-                message = "Ошибка при обновлении контакта"
-            )
-        } else {
-            val index = contacts.indexOfFirst { it.id == contact.id }
-            if (index != -1) {
-                contacts[index] = contact
-            } else {
-                contacts.add(contact)
-            }
-            ApiResponse(data = contact)
-        }
-    }
+//    suspend fun updateContact(contact: Contact): ApiResponse<Contact> {
+//        simulateNetworkDelay(1200, 2000)
+//
+//        return if (shouldSimulateError()) {
+//            ApiResponse(
+//                data = contact,
+//                success = false,
+//                message = "Ошибка при обновлении контакта"
+//            )
+//        } else {
+//            val index = contacts.indexOfFirst { it.id == contact.id }
+//            if (index != -1) {
+//                contacts[index] = contact
+//            } else {
+//                contacts.add(contact)
+//            }
+//            ApiResponse(data = contact)
+//        }
+//    }
 
     suspend fun deleteContact(id: Long): ApiResponse<Boolean> {
         simulateNetworkDelay(800, 1800)
@@ -268,6 +268,6 @@ class MockDataSource {
             contacts[index] = updatedContact
 
             ApiResponse(data = updatedContact)
-        }) as ApiResponse<Contact>
+        }) as ApiResponse<Contact?>
     }
 }

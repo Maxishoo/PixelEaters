@@ -16,28 +16,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFBB86FC),
-    secondary = Color(0xFF03DAC6),
-    tertiary = Color(0xFF3700B3),
-    background = Color(0xFF121212),
-    surface = Color(0xFF121212),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onBackground = Color.White,
-    onSurface = Color.White,
+private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF09B710),
+    secondary = Color(0xFF2196F3),
+    tertiary = Color(0xFFFF9800),
+    error = Color(0xFF9C27B0),
+    surfaceVariant = Color(0xFF795548)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF6200EE),
-    secondary = Color(0xFF03DAC6),
-    tertiary = Color(0xFF3700B3),
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF81C784),
+    secondary = Color(0xFF64B5F6),
+    tertiary = Color(0xFFFFB74D),
+    error = Color(0xFFBA68C8),
+    surfaceVariant = Color(0xFFA1887F)
 )
 
 @Composable
@@ -58,6 +50,7 @@ fun ContactsAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            @Suppress("DEPRECATION")
             window.statusBarColor = colorScheme.primary.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }

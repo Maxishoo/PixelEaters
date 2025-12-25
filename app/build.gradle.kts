@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.foundation.layout)
     kapt("androidx.room:room-compiler:2.8.4")
 
     // Lifecycle

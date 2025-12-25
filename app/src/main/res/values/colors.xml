@@ -7,4 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="category_work">#509C50</color>
+    <color name="category_study">#5DA4A4</color>
+    <color name="category_friend">#FB9C9C</color>
+    <color name="category_family">#F687AC</color>
+    <color name="category_colleague">#5D81A4</color>
+    <color name="category_default">#7A9C50</color>
+
+    <color name="pink_let_card">#FFC1AB</color>
+    <color name="card_background">#E1EDEE</color>
+
+    <color name="add_button">#5162E5</color>
 </resources>
